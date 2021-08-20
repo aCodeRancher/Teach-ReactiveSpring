@@ -14,6 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -146,9 +147,15 @@ public class ItemControllerTest {
         webTestClient.delete().uri(ItemConstants.ITEM_END_POINT_V1.concat("/{id}"),"ABC")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isOk()
-                .expectBody(Void.class);
+                .expectStatus().isNoContent();
+    }
 
+    @Test
+    public void deleteNotFoundItem(){
+
+        webTestClient.delete()
+               .uri(ItemConstants.ITEM_END_POINT_V1.concat("/{id}"),"notexist")
+               .exchange().expectStatus().isNotFound();
     }
 
     @Test
