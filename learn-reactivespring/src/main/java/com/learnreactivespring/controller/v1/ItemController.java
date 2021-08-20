@@ -53,11 +53,17 @@ public class ItemController {
     }
 
     @DeleteMapping(ITEM_END_POINT_V1+"/{id}")
-    public Mono<Void> deleteItem(@PathVariable String id){
+    public Mono<ResponseEntity<HttpStatus>> deleteItem(@PathVariable String id){
 
-        return itemReactiveRepository.deleteById(id);
-
-
+          return  itemReactiveRepository.existsById(id)
+                    .flatMap( found -> {
+                                 if (found) {
+                                     itemReactiveRepository.deleteById(id);
+                                     return Mono.just( new ResponseEntity<>(HttpStatus.NO_CONTENT));
+                                 }
+                                 else
+                                     return Mono.just(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                    });
     }
 
     @GetMapping(ITEM_END_POINT_V1+"/runtimeException")
