@@ -148,6 +148,10 @@ public class ItemHandlerTest {
                 .expectStatus().isOk()
                 .expectBody(Void.class);
 
+        webTestClient.get().uri(ItemConstants.ITEM_FUNCTIONAL_END_POINT_V1.concat("/{id}"),"ABC")
+                .exchange()
+                .expectStatus().isNotFound();
+
     }
 
     @Test
