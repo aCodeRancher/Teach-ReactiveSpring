@@ -59,18 +59,15 @@ public class ItemsHandler {
     public Mono<ServerResponse> deleteItem(ServerRequest serverRequest) {
 
          String id = serverRequest.pathVariable("id");
-       return itemReactiveRepository.existsById(id)
-                .flatMap( found -> {
-                    if (found) {
+
+       return itemReactiveRepository.findById(id)
+                .flatMap( item -> {
                         Mono<Void> deleteItem = itemReactiveRepository.deleteById(id);
                         return ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .body(deleteItem, Void.class);
-                    } else {
-                        return ServerResponse.notFound().build();
-                    }
 
-                });
+              }).switchIfEmpty(notFound);
      }
 
     public Mono<ServerResponse> updateItem(ServerRequest serverRequest) {
