@@ -33,7 +33,7 @@ public class ItemClientController {
                 .log("Items in Client Project exchange : ");
     }
 
-    @GetMapping("/client/retrieve/singleItem")
+    @GetMapping("/client/retrieve/singleItem/{id}")
     public Mono<Item> getOneItemUsingRetrieve(@PathVariable String id){
 
         return webClient.get().uri("/v1/items/{id}",id)
