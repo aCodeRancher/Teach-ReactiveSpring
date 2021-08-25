@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
+
 import static org.junit.Assert.assertTrue;
 
 
@@ -75,4 +76,26 @@ public class ItemClientControllerTest  {
                 .bodyToMono(Item.class).block();
         assertTrue(addedItem.getDescription().equals("Lenovo laptop"));
    }
+
+
+    @Test
+    public void updateItem(){
+        Mono<Item> itemBody = Mono.just(new Item("ABC", "Beats HeadPhones", 139.99));
+        Item updatedItem = webClient.put().uri("/v1/items/{id}", "ABC")
+               .body(itemBody, Item.class)
+               .retrieve()
+               .bodyToMono(Item.class).block();
+         assertTrue(updatedItem.getPrice()==139.99);
+
+   }
+
+   @Test
+    public void deleteItem() {
+
+       webClient.delete().uri("/v1/items/{id}","ABC")
+               .retrieve()
+               .bodyToMono(Void.class);
+
+    }
+
 }
