@@ -104,7 +104,7 @@ public class ItemClientController {
                     if(clientResponse.statusCode().is5xxServerError()){
 
                         return clientResponse.bodyToMono(String.class)
-                                .flatMap(errorMessage -> {
+                                .flatMapMany(errorMessage -> {
                                     log.error("Error Message in errorExchange : " + errorMessage);
                                     throw  new RuntimeException(errorMessage);
                                 });
