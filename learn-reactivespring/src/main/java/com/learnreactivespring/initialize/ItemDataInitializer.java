@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.data.mongodb.core.query.Collation;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -42,7 +43,8 @@ public class ItemDataInitializer implements CommandLineRunner {
 
     private void createCappedCollection() {
         mongoOperations.dropCollection(ItemCapped.class)
-        .then(mongoOperations.createCollection(ItemCapped.class, CollectionOptions.empty().maxDocuments(20).size(50000).capped()));
+        .then(mongoOperations.createCollection(ItemCapped.class,
+                CollectionOptions.just(Collation.simple()).capped().maxDocuments(20).size(50000))).subscribe();
 
     }
 
