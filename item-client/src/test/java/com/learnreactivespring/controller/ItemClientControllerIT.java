@@ -1,7 +1,6 @@
 package com.learnreactivespring.controller;
 
 import com.learnreactivespring.domain.Item;
-
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,27 +10,25 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.junit.Test;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
-
 import static org.junit.Assert.assertTrue;
-
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @DirtiesContext
-public class ItemClientControllerTest  {
+public class ItemClientControllerIT {
 
     private WebClient webClient;
     private static final String BASEURL= "http://localhost:8080";
 
     @Before
-     public void setUp(){
+    public void setUp(){
         webClient = WebClient.builder().baseUrl(BASEURL)
-                   .clientConnector(new ReactorClientHttpConnector(HttpClient.create().wiretap(true)))
-                   .build();
+                .clientConnector(new ReactorClientHttpConnector(HttpClient.create().wiretap(true)))
+                .build();
     }
-
 
     @Test
     public void retrieveAllItems(){
@@ -58,6 +55,13 @@ public class ItemClientControllerTest  {
 
    }
 
+    @Test(expected = WebClientResponseException.class)
+    public void retrieveOneItemNotFound(){
+
+          webClient.get().uri("/v1/items/{id}", "ABCD")
+                 .retrieve().bodyToMono(Item.class).block();
+    }
+
     @Test
     public void exchangeOneItem(){
         Item item = webClient.get().uri("/v1/items/{id}", "ABC")
@@ -77,8 +81,7 @@ public class ItemClientControllerTest  {
         assertTrue(addedItem.getDescription().equals("Lenovo laptop"));
    }
 
-
-    @Test
+   @Test
     public void updateItem(){
         Mono<Item> itemBody = Mono.just(new Item("ABC", "Beats HeadPhones", 139.99));
         Item updatedItem = webClient.put().uri("/v1/items/{id}", "ABC")
@@ -86,16 +89,5 @@ public class ItemClientControllerTest  {
                .retrieve()
                .bodyToMono(Item.class).block();
          assertTrue(updatedItem.getPrice()==139.99);
-
    }
-
-   @Test
-    public void deleteItem() {
-
-       webClient.delete().uri("/v1/items/{id}","ABC")
-               .retrieve()
-               .bodyToMono(Void.class);
-
-    }
-
 }
