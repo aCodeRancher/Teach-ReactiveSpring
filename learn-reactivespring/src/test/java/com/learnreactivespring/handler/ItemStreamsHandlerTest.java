@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.data.mongodb.core.query.Collation;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -41,10 +42,9 @@ public class ItemStreamsHandlerTest {
     @Before
     public void setUp() {
 
-        mongoOperations.dropCollection(ItemCapped.class);
-        mongoOperations.createCollection(ItemCapped.class, CollectionOptions.empty().maxDocuments(20).size(50000).capped())
-                .block();
-
+        mongoOperations.dropCollection(ItemCapped.class)
+                .then(mongoOperations.createCollection(ItemCapped.class,
+                        CollectionOptions.just(Collation.simple()).capped().maxDocuments(20).size(50000))).subscribe();
         Flux<ItemCapped> itemCappedFlux = Flux.interval(Duration.ofMillis(100))
                 .map(i -> new ItemCapped(null, "Random Item " + i, (100.00 + i)))
                 .take(5);
