@@ -1,0 +1,27 @@
+[
+  {
+    "id": "619d9694955788349b824127",
+    "description": "Samsung TV",
+    "price": 399.99
+  },
+  {
+    "id": "619d9694955788349b824129",
+    "description": "Apple Watch",
+    "price": 349.99
+  },
+  {
+    "id": "619d9694955788349b824128",
+    "description": "LG TV",
+    "price": 329.99
+  },
+  {
+    "id": "ABC",
+    "description": "Beats HeadPhones",
+    "price": 149.99
+  },
+  {
+    "id": "4",
+    "description": null,
+    "price": null
+  }
+]
