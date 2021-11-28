@@ -85,20 +85,20 @@ public class ItemClientController {
 
     }
 
-    //@DeleteMapping("/client/deleteItem/{id}")
+    @DeleteMapping("/client/deleteItem/{id}")
     public Mono<Void> deleteItem(@PathVariable String id){
 
-        return webClient.delete().uri("/v1/items/{id}",id)
+        return webClient.delete().uri(baseUrl +"/v1/items/{id}",id)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .log("Deleted Item is");
     }
 
-   // @GetMapping("/client/retrieve/error")
+   @GetMapping("/client/retrieve/error")
     public Flux<Item> errorRetrieve(){
 
         return webClient.get()
-                .uri("/v1/items/runtimeException")
+                .uri(baseUrl +"/v1/items/runtimeException")
                 .retrieve()
                 .onStatus(HttpStatus::is5xxServerError, clientResponse -> {
 
@@ -112,11 +112,11 @@ public class ItemClientController {
     }
 
 
-    //@GetMapping("/client/exchange/error")
+    @GetMapping("/client/exchange/error")
     public Flux<Item> errorExchange(){
 
         return webClient.get()
-                .uri("/v1/items/runtimeException")
+                .uri(baseUrl+"/v1/items/runtimeException")
                 .exchange()
                 .flatMapMany((clientResponse -> {
 
@@ -141,7 +141,7 @@ public class ItemClientController {
 
         Mono<Item> itemBody = Mono.just(item);
 
-        return webClient.put().uri("/v1/items/{id}",id)
+        return webClient.put().uri(baseUrl+"/v1/items/{id}",id)
                 .body(itemBody, Item.class)
                 .retrieve()
                 .bodyToMono(Item.class)
