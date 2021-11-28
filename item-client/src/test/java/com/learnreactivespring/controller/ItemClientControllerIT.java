@@ -168,5 +168,79 @@ public class ItemClientControllerIT {
                 });
 
     }
+
+    @Test
+    void deleteItem(){
+        Item itemToAdd = new Item("ABMac", "Mac Book Pro", 600.00);
+
+        /* stubFor(post(urlPathEqualTo("/v1/items"))
+               .withRequestBody(matchingJsonPath("$.id", equalTo("ABMac")))
+                .willReturn(WireMock.aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .withBodyFile("item.json")
+         ));
+
+         webTestClient.post().uri("/client/exchange/createItem")
+                  .bodyValue(itemToAdd)
+                 .exchange()
+                 .expectStatus().isOk()
+                 .expectBody(Item.class);
+           */
+         stubFor(delete(urlPathEqualTo("/v1/items/ABMac"))
+                  .willReturn(WireMock.aResponse()
+                   .withStatus(HttpStatus.OK.value())
+                   .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                   .withBody("Deleted Item is ABMac")
+                  ));
+        webTestClient.delete().uri("/client/deleteItem/ABMac")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Void.class);
+
+    }
+
+    @Test
+    void errorRetrieve(){
+        stubFor(get(urlEqualTo("/v1/items/runtimeException"))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                         .withBodyFile("500-error.json")));
+
+
+
+        webTestClient.get().uri("/client/retrieve/error")
+                .exchange().expectStatus().is5xxServerError();
+
+      }
+
+    @Test
+    void errorExchange(){
+        stubFor(get(urlEqualTo("/v1/items/runtimeException"))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .withBodyFile("500-error.json")));
+
+
+
+        webTestClient.get().uri("/client/exchange/error")
+                .exchange().expectStatus().is5xxServerError();
+
+    }
+
+    @Test
+    void updateItem(){
+         Item item = new Item("1", "Samsung TV", 500.0);
+        stubFor(put(urlPathMatching("/v1/items/[0-9]+"))
+                .withRequestBody(matchingJsonPath("$.price", equalTo("500.0")))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("updateItem-template.json")));
+        webTestClient.put().uri("/client/updateItem/1")
+                .bodyValue(item)
+                .exchange().expectStatus().isOk();
+
+    }
 }
 
