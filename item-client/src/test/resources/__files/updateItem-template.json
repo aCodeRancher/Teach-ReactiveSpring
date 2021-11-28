@@ -1,0 +1,5 @@
+{
+  "id": "{{request.path.[3]}}",
+  "description": "Samsung TV",
+  "price": 500.00
+}
